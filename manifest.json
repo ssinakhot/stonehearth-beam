@@ -10,11 +10,17 @@
       "radiant"
    ],
    "default_locale": "en",
+   "server_init_script": "file(stonehearth_beam_server)",
    "functions": {
     },
     "overrides": {
       "stonehearth/ui/shell/select_roster/select_roster.html": "stonehearth_beam/ui/shell/select_roster/select_roster.html",
       "stonehearth/ui/shell/select_roster/select_roster.js": "stonehearth_beam/ui/shell/select_roster/select_roster.js"
+    },
+    "object_commands": {
+      "stats_customization": [
+         "change_stat_by_type_command"
+      ]
     },
     "ui": {
        "html": [

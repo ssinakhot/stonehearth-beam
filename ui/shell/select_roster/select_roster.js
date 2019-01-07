@@ -334,17 +334,25 @@ App.StonehearthCitizenRosterEntryView = App.View.extend({
    },
 
     actions: {
-      changeCitizenStat: function(operator, stat) {
+      changeCitizenStat: function(operator, statType) {
          var self = this;
-         console.log(self);
-         var currentValue = self.model['stonehearth:attributes'].attributes[stat].effective_value;
-         if (operator == 'increment' && currentValue < 6)
-            currentValue++;
-         else if (operator == 'decrement' && currentValue > 1)
-            currentValue--;
-         Ember.set(self.model['stonehearth:attributes'].attributes[stat], 'user_visible_value', currentValue);
-         self.model['stonehearth:attributes'].attributes[stat].effective_value = currentValue;
-         self.model['stonehearth:attributes'].attributes[stat].value = currentValue;
+         var oldValue = self.model['stonehearth:attributes'].attributes[statType].effective_value;
+         var newValue = oldValue;
+         if (operator == 'increment' && newValue < 6)
+            newValue++;
+         else if (operator == 'decrement' && newValue > 1)
+            newValue--;
+         if (newValue == oldValue)
+            return;
+
+         radiant.call_obj('stonehearth_beam.stats_customization', 'change_stat_by_type_command', self._citizenObjectId, statType, newValue)
+            .done(function(response) {
+               self._selectRow();
+               self._updateCitizenView(response.citizen);
+            })
+            .fail(function(response) {
+               console.log('change_stat_by_type failed. ' + response);
+            });
       },
       regenerateCitizenStatsAndAppearance: function() {
          var self = this;
