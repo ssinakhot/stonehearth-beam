@@ -1,4 +1,4 @@
-# stonehearth_beam
+# Beam - Hearthling Stats Customization
 
 Let's make game starts easier by allowing customization of hearthling stats and traits.
 

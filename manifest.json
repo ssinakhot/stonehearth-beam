@@ -1,10 +1,11 @@
 {
    "info": {
-      "name": "Stonehearth Beam",
+      "name": "Beam - Hearthling Stats Customization",
       "namespace": "stonehearth_beam",
-      "version": 3
+      "version": 3,
+      "steam_file_id" : "1617895793"
    },
-   "author": "Steven Sinakhot",
+   "author": "Bolune",
    "dependencies": [
       "stonehearth",
       "radiant"
