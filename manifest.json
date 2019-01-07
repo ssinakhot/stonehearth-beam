@@ -1,0 +1,28 @@
+{
+   "info": {
+      "name": "Stonehearth Beam",
+      "namespace": "stonehearth_beam",
+      "version": 3
+   },
+   "author": "Steven Sinakhot",
+   "dependencies": [
+      "stonehearth",
+      "radiant"
+   ],
+   "default_locale": "en",
+   "functions": {
+    },
+    "overrides": {
+      "stonehearth/ui/shell/select_roster/select_roster.html": "stonehearth_beam/ui/shell/select_roster/select_roster.html",
+      "stonehearth/ui/shell/select_roster/select_roster.js": "stonehearth_beam/ui/shell/select_roster/select_roster.js"
+    },
+    "ui": {
+       "html": [
+       ],
+       "js": [
+       ],
+       "less": [
+         "file(ui/shell/select_roster/select_roster.less)"
+       ]
+    }
+}
