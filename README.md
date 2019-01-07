@@ -1,8 +1,6 @@
 # stonehearth_beam
 
-Let's make game starts easier by allowing customization of character stats and traits.
-
-It's up to the player to determine what is cheating.
+Let's make game starts easier by allowing customization of hearthling stats and traits.
 
 # Tasks
 
