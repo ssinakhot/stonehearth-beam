@@ -1,0 +1,38 @@
+<script type="text/x-handlebars" data-template-name="beamTraitCustomization">
+   <div id="stonehearthCitizenTraitCustomization" class="gui">
+      <div class="window">
+         <div class="title">
+            {{i18n stonehearth:ui.shell.select_roster.reembark_title}}
+            <div class="closeButton"></div>
+         </div>
+
+         <div class="downSection">
+            <div id="traits">
+                {{#each view.traits itemView="beamTraitItem" model=this}}
+                  <div class="item" {{bind-attr uri=this.uri}}>
+                      <img {{bind-attr src=this.icon}} />
+                  </div>
+                {{/each}}
+            </div>
+         </div>
+
+         <div id="buttons">
+             <a href="#" {{action "delete" target="view"}} class="left">
+                <button class="red">
+                  {{i18n stonehearth:ui.shell.select_roster.delete_crew}}
+                </button>
+             </a>
+             <a href="#" {{action "cancel" target="view"}} class="right">
+               <button>
+                  {{i18n stonehearth:ui.shell.select_roster.cancel_crew}}
+               </button>
+             </a>
+             <a href="#" {{action "select" target="view"}} class="right">
+                <button>
+                  {{i18n stonehearth:ui.shell.select_roster.select_crew}}
+                </button>
+             </a>
+          </div>
+      </div>
+   </div>
+</script>
