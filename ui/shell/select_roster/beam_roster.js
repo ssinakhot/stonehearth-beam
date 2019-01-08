@@ -39,7 +39,7 @@ $(top).on('stonehearthReady', function() {
             var newValue = oldValue;
             if (operator == 'increment' && newValue < self.maxStatValue)
                newValue++;
-            else if (operator == 'decrement' && newValue > self.maxStatValue)
+            else if (operator == 'decrement' && newValue > 1)
                newValue--;
             if (newValue == oldValue)
                return;
