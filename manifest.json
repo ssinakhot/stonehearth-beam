@@ -14,22 +14,24 @@
    "server_init_script": "file(stonehearth_beam_server)",
    "functions": {
     },
-    "overrides": {
-      "stonehearth/ui/shell/select_roster/select_roster.html": "stonehearth_beam/ui/shell/select_roster/select_roster.html",
-      "stonehearth/ui/shell/select_roster/select_roster.js": "stonehearth_beam/ui/shell/select_roster/select_roster.js"
-    },
     "object_commands": {
       "stats_customization": [
-         "change_stat_by_type_command"
+         "change_stat_by_type_command",
+         "get_all_traits_command",
+         "add_trait_command",
+         "remove_trait_command"
       ]
     },
     "ui": {
        "html": [
+         "file(ui/shell/select_roster/beam_roster.html)"
        ],
        "js": [
+         "file(ui/shell/select_roster/beam_roster.js)",
+         "file(ui/shell/select_roster/beam_trait_item.js)"
        ],
        "less": [
-         "file(ui/shell/select_roster/select_roster.less)"
+         "file(ui/shell/select_roster/beam_roster.less)"
        ]
     }
 }

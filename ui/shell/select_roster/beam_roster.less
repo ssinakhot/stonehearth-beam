@@ -66,3 +66,46 @@
       }
    }
 }
+
+#stonehearthCitizenTraitCustomization {
+   position: absolute;
+   height: 100%;
+   width: 100%;
+   background-color: rgba(0, 0, 0, 0.7);
+   display: flex;
+   z-index: 2;
+
+   .window {
+      position: relative;
+      margin: auto;
+      width: 900px;
+      height: 440px;
+      overflow: auto;
+      
+      .downSection {
+         height: 270px;
+         margin-top: 10px;
+         overflow-y: auto;
+
+        #traits {
+            position: absolute;
+            left: 7px;
+            top: 145px;
+        }
+      }
+   }
+
+   #buttons {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 5px;
+
+      .right {
+         float: right;
+      }
+      .left {
+         float: left;
+      }
+   }
+}
