@@ -32,7 +32,6 @@ $(top).on('stonehearthReady', function() {
                element.append(createArrowButton('decrement', element.attr('id')))
                element.append(createArrowButton('increment', element.attr('id')))
            });
-           console.log(self);
         },
         _changeCitizenStat: function(operator, statType) {
             var self = this;
