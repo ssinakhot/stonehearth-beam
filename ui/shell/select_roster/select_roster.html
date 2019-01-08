@@ -124,7 +124,7 @@
       <div class="statsImage" />
       <div class="statsLabels">
          <div id="mind" class="stat">
-            <div class="decrement arrowButton" {{action "changeIndex" "decrement" "mind" target="view"}}></div>
+            <div class="decrement arrowButton" {{action "changeCitizenStat" "decrement" "mind" target="view"}}></div>
             <div class="statValue">{{view.model.stonehearth:attributes.attributes.mind.user_visible_value}}</div>
             <div class="whiteBlackOutline label">{{i18n stonehearth:ui.data.tooltips.mind.display_name}}</div>
             <div class="increment arrowButton" {{action "changeCitizenStat" "increment" "mind" target="view"}}></div>
