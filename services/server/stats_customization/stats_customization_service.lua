@@ -30,6 +30,10 @@ function StatsCustomizationService:get_all_traits_command(session, response, ent
             trait['i18n_data'] = {}
             trait['i18n_data']['entity_custom_name'] = radiant.entities.get_custom_name(entity) 
             trait['i18n_data']['entity_display_name'] = radiant.entities.get_display_name(entity)
+            if group_name == 'passion_jobs' then
+                local job = radiant.resources.load_json(trait.data.job_uri, true, true)
+                trait['i18n_data']['passion_job'] = job.display_name
+            end
             trait['uri'] = trait_uri
             table.insert(all_traits, trait)
         end
@@ -39,10 +43,20 @@ function StatsCustomizationService:get_all_traits_command(session, response, ent
         trait['i18n_data'] = {}
         trait['i18n_data']['entity_custom_name'] = radiant.entities.get_custom_name(entity) 
         trait['i18n_data']['entity_display_name'] = radiant.entities.get_display_name(entity)
+        if trait_uri == 'stonehearth:traits:animal_companion' then
+            local species = radiant.entities.get_entity_data(entity, 'stonehearth:species', false)
+            trait['i18n_data']['maybe_determiner'] = 'i18n(stonehearth:ui.game.common.the)'
+            trait['i18n_data']['maybe_savior_species'] = '%random_species%'
+            trait['i18n_data']['savee_custom_name'] = trait['i18n_data']['entity_custom_name']
+            trait['i18n_data']['savee_display_name'] = trait['i18n_data']['entity_display_name']
+            trait['i18n_data']['savee_species'] = species and species.display_name or trait.data.default_species
+            trait['i18n_data']['savior_custom_name'] = '%random_name%'
+            trait['i18n_data']['savior_display_name'] = 'i18n(stonehearth:ui.game.entities.custom_name)'
+        end
         trait['uri'] = trait_uri
         table.insert(all_traits, trait)
    end
-   response:resolve({ all_traits = all_traits })
+   response:resolve({ all_traits = all_traits, test = pop._traits })
 end
 
 function StatsCustomizationService:add_trait_command(session, response, entity, trait_uri)

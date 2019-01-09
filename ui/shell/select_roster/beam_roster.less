@@ -39,35 +39,68 @@
                   text-align: right;
                   color: #00b9f6;
                }
+
+               .statValue {
+                  position: absolute;
+                  left: 63px;
+                  top: 18px; 
+               }
+
+               .label {
+                  position: absolute;
+                  font-size: 14px;
+                  top: 46px;
+                  left: 8px;
+               }
+
                .arrowButton {
                   .handCursor;
                   .control;
                   position: absolute;
                   background-repeat: no-repeat;
                   background-size: contain;
-                  width: 16px;
+                  width: 32px;
                   height: 32px;
                }
 
                .increment {
-                  background-image: url(images/increment_button.png);
-                  top: 10px;
-                  left: 60px;
+                  background-image: url(images/up_arrow.png);
+                  top: -10px;
+                  left: 53px;
+               }
+
+               .hidden {
+                  display: none;
                }
 
                .decrement {
-                  background-image: url(images/decrement_button.png);
-                  top: 10px;
-                  left: -14px;
+                  background-image: url(images/down_arrow.png);
+                  top: 40px;
+                  left: 53px;
                }
 
             }
          }
       }
    }
+
+   #traitDescriptions {
+      #edit_traits {
+         position: absolute;         
+         right: 6px; 
+         top: 6px;
+
+         button {
+            font-size: 18px;
+            padding: 6px;
+            background-image: url(images/button_light_blue.png);
+            border-image: url(images/button_light_blue.png) 8 8 14 8 repeat;
+         }
+      }
+   }
 }
 
-#stonehearthCitizenTraitCustomization {
+#beamTraitCustomization {
    position: absolute;
    height: 100%;
    width: 100%;

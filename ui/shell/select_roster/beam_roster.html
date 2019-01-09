@@ -1,35 +1,32 @@
 <script type="text/x-handlebars" data-template-name="beamTraitCustomization">
-   <div id="stonehearthCitizenTraitCustomization" class="gui">
+   <div id="beamTraitCustomization" class="gui">
       <div class="window">
          <div class="title">
-            {{i18n stonehearth:ui.shell.select_roster.reembark_title}}
+            {{i18n stonehearth_beam:ui.shell.beam_roster.edit_traits_title}}
             <div class="closeButton"></div>
          </div>
 
          <div class="downSection">
             <div id="traits">
-                {{#each view.traits itemView="beamTraitItem" model=this}}
-                  <div class="item" {{bind-attr uri=this.uri}}>
-                      <img {{bind-attr src=this.icon}} />
-                  </div>
+                {{#each view.traits itemView="beamTraitItem"}}
+                    <div class="traitDescription" {{bind-attr uri=this.uri}}>
+                        <img {{bind-attr src=this.icon}} />
+                        <div class="displayName" />
+                        <div class="description" />
+                    </div>
                 {{/each}}
             </div>
          </div>
 
          <div id="buttons">
-             <a href="#" {{action "delete" target="view"}} class="left">
-                <button class="red">
-                  {{i18n stonehearth:ui.shell.select_roster.delete_crew}}
-                </button>
-             </a>
              <a href="#" {{action "cancel" target="view"}} class="right">
-               <button>
-                  {{i18n stonehearth:ui.shell.select_roster.cancel_crew}}
+               <button class="red">
+                  {{i18n stonehearth_beam:ui.shell.beam_roster.cancel_traits}}
                </button>
              </a>
-             <a href="#" {{action "select" target="view"}} class="right">
-                <button>
-                  {{i18n stonehearth:ui.shell.select_roster.select_crew}}
+             <a href="#" {{action "save" target="view"}} class="right">
+                <button class="green">
+                  {{i18n stonehearth_beam:ui.shell.beam_roster.save_traits}}
                 </button>
              </a>
           </div>
