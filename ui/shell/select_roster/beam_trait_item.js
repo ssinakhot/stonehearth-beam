@@ -19,7 +19,6 @@ App.BeamTraitItemView = App.View.extend({
    _updateTraitData: function() {
       var self = this;
 
-      console.log(self);
       var trait = self.get('context');
       if (!trait) {
          return;

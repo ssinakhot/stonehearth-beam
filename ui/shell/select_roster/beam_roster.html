@@ -9,8 +9,8 @@
          <div class="downSection">
             <div id="traits">
                   {{#each view.traits itemView="beamTraitItem"}}
-                     <div class="traitDescription" {{bind-attr uri=this.uri}}>
-                        <img {{action "add_trait" this.uri target="view.parentView"}} {{bind-attr src=this.icon}} />
+                     <div class="traitDescription" {{action "add_trait" this.uri target="view.parentView"}} {{bind-attr uri=this.uri}}>
+                        <img {{bind-attr src=this.icon}} />
                         <div class="displayName" />
                         <div class="description" />
                      </div>

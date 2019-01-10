@@ -24,6 +24,13 @@
                self.$().find('#cheatMode').tooltipster('destroy');
                self._super();
             },
+            setSelectedCitizen: function(citizen, selectedView, selectedViewIndex) {
+               var self = this;
+               self._super(citizen, selectedView, selectedViewIndex);
+               if (citizen) {
+                  setTimeout(() => self._injectRemoveTraitHtml(), 100);
+               }
+            },
             // FUNCTIONS
             _injectCheatModeCheckbox: function() {
                var self = this;
@@ -58,14 +65,42 @@
                   button.on('click', () => self._showAddTraitsView());
                   return button;
                };
-               rootElement.find('.gui').append(createAddTraitsButton())
+               rootElement.find('.gui').append(createAddTraitsButton());
             },
             _showAddTraitsView: function() {
                var self = this;
                if (self._addTraitsView) {
                   self._addTraitsView.destroy();
                }
-               self._addTraitsView = App.shellView.addView(App.BeamTraitCustomizationView, { _citizen: self.selected, _citizenObjectId: self.selected.__self });
+               self._addTraitsView = App.shellView.addView(App.BeamTraitCustomizationView, { _citizen: self.selected, _citizenObjectId: self.selected.__self, rosterView: self });
+            },
+            _injectRemoveTraitHtml: function() {
+               var self = this;
+               var rootElement = self.$();
+
+               var createRemoveTraitButton = (trait_url) => {
+                  var image = $('<div class="removeIcon"/>');
+                  image.on('click', () => self._removeTrait(trait_url));
+                  return image;
+               };
+
+               traitDescriptionElements = rootElement.find('.traitDescription');
+               traitDescriptionElements.each((index, element) => {
+                  element = $(element);
+                  if (element.find('.removeIcon').length > 0)
+                     return;
+                  element.prepend(createRemoveTraitButton(element.attr('uri')));
+               })
+            },
+            _removeTrait: function(trait_uri) {
+               var self = this;
+               radiant.call_obj('stonehearth_beam.stats_customization', 'remove_trait_command', self.selected.__self, trait_uri)
+                  .done(function(response) {
+                     setTimeout(() => self._injectRemoveTraitHtml(), 100);
+                  })
+                  .fail(function(response) {
+                     console.log('get_all_traits failed.', response);
+                  });
             }
       });
 
@@ -218,7 +253,9 @@
             }
       });
    }
+
    // run this on ready for hot_reload on the same roster screen
+   // requires localhost:1338 to be open
    $(top).ready(function() {
       inject();
    });
@@ -242,18 +279,22 @@ App.BeamTraitCustomizationView = App.View.extend({
       var self = this;
       self._super();
 
+      var compareByTraitName = (a, b) => {
+         var nameA = i18n.t(a.display_name, a);
+         var nameB = i18n.t(b.display_name, b);
+         if (nameA < nameB)
+            return -1;
+         if (nameA > nameB)
+            return 1;
+         return 0;
+      };
+
       radiant.call_obj('stonehearth_beam.stats_customization', 'get_all_traits_command', self._citizenObjectId)
             .done(function(response) {
                traits = response.all_traits;
-               traits.sort((a, b) => {
-                  var nameA = i18n.t(a.display_name, a);
-                  var nameB = i18n.t(b.display_name, b);
-                  if (nameA < nameB)
-                     return -1;
-                  if (nameA > nameB)
-                     return 1;
-                  return 0;
-               });
+               traits.sort(compareByTraitName);
+               var currentTraitUris = Object.keys(self._citizen['stonehearth:traits'].traits);
+               traits = traits.filter((t) => !currentTraitUris.includes(t.uri));
                self.set('traits', traits);
             })
             .fail(function(response) {
@@ -270,6 +311,7 @@ App.BeamTraitCustomizationView = App.View.extend({
          var self = this;
          radiant.call_obj('stonehearth_beam.stats_customization', 'add_trait_command', self._citizenObjectId, trait_uri)
             .done(function(response) {
+               setTimeout(() => self.rosterView._injectRemoveTraitHtml(), 100);
                self.destroy();
             })
             .fail(function(response) {
