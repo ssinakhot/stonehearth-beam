@@ -2,30 +2,30 @@
    <div id="beamTraitCustomization" class="gui">
       <div class="window">
          <div class="title">
-            {{i18n stonehearth_beam:ui.shell.beam_roster.edit_traits_title}}
+            {{i18n stonehearth_beam:ui.shell.beam_roster.add_traits_title}}
             <div class="closeButton"></div>
          </div>
 
-         <div id="traits">
-               {{#each view.traits itemView="beamTraitItem"}}
-                  <div class="traitDescription" {{bind-attr uri=this.uri}}>
-                     <img {{bind-attr src=this.icon}} />
-                     <div class="displayName" />
-                     <div class="description" />
-                  </div>
-               {{/each}}
+         <div class="downSection">
+            <div id="traits">
+                  {{#each view.traits itemView="beamTraitItem"}}
+                     <div class="traitDescription" {{bind-attr uri=this.uri}}>
+                        <img {{action "add_trait" this.uri target="view.parentView"}} {{bind-attr src=this.icon}} />
+                        <div class="displayName" />
+                        <div class="description" />
+                     </div>
+                  {{/each}}
+            </div>
          </div>
 
          <div id="buttons">
-             <a href="#" {{action "cancel" target="view"}} class="right">
+            <div class="hint left">
+                  {{i18n stonehearth_beam:ui.shell.beam_roster.add_traits_hint}}
+            </div>
+             <a href="#" {{action "close" target="view"}} class="right">
                <button class="red">
-                  {{i18n stonehearth_beam:ui.shell.beam_roster.cancel_traits}}
+                  {{i18n stonehearth_beam:ui.shell.beam_roster.close_traits}}
                </button>
-             </a>
-             <a href="#" {{action "save" target="view"}} class="right">
-                <button class="green">
-                  {{i18n stonehearth_beam:ui.shell.beam_roster.save_traits}}
-                </button>
              </a>
           </div>
       </div>

@@ -9,4 +9,4 @@ Let's make game starts easier by allowing customization of hearthling stats and 
 - [X] Add in cheat mode for stats (Unlimited stats)
 - [X] Retrieve all available traits
 - [ ] Allow player to remove traits
-- [ ] Allow player to add traits
+- [X] Allow player to add traits

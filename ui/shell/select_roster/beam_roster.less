@@ -110,18 +110,16 @@
       }
    }
 
-   #traitDescriptions {
-      #edit_traits {
-         position: absolute;         
-         right: 6px; 
-         top: 6px;
+   #add_traits {
+      position: absolute;         
+      right: 110px;
+      bottom: 550px;
 
-         button {
-            font-size: 18px;
-            padding: 6px;
-            background-image: url(images/button_light_blue.png);
-            border-image: url(images/button_light_blue.png) 8 8 14 8 repeat;
-         }
+      button {
+         font-size: 14px;
+         padding: 4px;
+         background-image: url(images/button_light_blue.png);
+         border-image: url(images/button_light_blue.png) 8 8 14 8 repeat;
       }
    }
 }
@@ -138,18 +136,22 @@
       position: relative;
       margin: auto;
       width: 900px;
-      height: 440px;
+      height: 840px;
       overflow: auto;
       
       .downSection {
-         height: 270px;
+         height: 670px;
          margin-top: 10px;
-         overflow-y: auto;
+         overflow-y: scroll;
 
         #traits {
-            position: absolute;
-            left: 7px;
-            top: 145px;
+            position: inline-block;
+            .traitDescription {
+
+               .description {
+                  color: white;
+               }
+            }
         }
       }
    }
@@ -159,6 +161,12 @@
       left: 10px;
       right: 10px;
       bottom: 5px;
+
+      .hint {
+         .controlFont;
+         font-size: 18px;
+         margin-top:10px;
+      }
 
       .right {
          float: right;

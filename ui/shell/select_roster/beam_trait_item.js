@@ -7,26 +7,25 @@ App.BeamTraitItemView = App.View.extend({
 
    didInsertElement: function() { 
       var self = this;
-      this._super();
-      Ember.run.scheduleOnce('afterRender', this, '_updateTraitData');
+      self._super();
+      Ember.run.scheduleOnce('afterRender', self, '_updateTraitData');
    },
 
    willDestroyElement: function() {
-      this.$().find('.tooltipstered').tooltipster('destroy');
+      var self = this;
+      self._super();
    },
 
    _updateTraitData: function() {
       var self = this;
 
+      console.log(self);
       var trait = self.get('context');
       if (!trait) {
          return;
       }
 
-
       self._updateTraitDescription();
-      self._updateTraitTooltip();
-
    },
 
    _updateTraitDescription() {
@@ -43,20 +42,4 @@ App.BeamTraitItemView = App.View.extend({
          self.$('.description').text(i18n.t(trait.description, args));
       }
    },
-
-   _updateTraitTooltip: function() {
-      var self = this;
-
-      var trait = self.get('context');
-
-      if (self.$('.item').length) {
-         var args = {
-            i18n_data : trait.i18n_data
-         };
-         var tooltip = App.tooltipHelper.createTooltip(i18n.t(trait.display_name, args), Ember.Handlebars.Utils.escapeExpression(i18n.t(trait.description, args)));
-
-         self.$('.item').tooltipster();
-         self.$('.item').tooltipster('content', $(tooltip));
-      }
-   }
 });

@@ -2,10 +2,10 @@
     "ui": {
         "shell": {
             "beam_roster": {
-                "edit_traits": "Edit Traits",
-                "edit_traits_title": "Edit Traits (Preview)",
-                "cancel_traits": "Cancel",
-                "save_traits": "Save & Close",
+                "add_traits": "Add Trait",
+                "add_traits_title": "Add Trait",
+                "add_traits_hint": "Note: Click on a trait icon to add trait to hearthling.",
+                "close_traits": "Close",
                 "cheat_mode_checkbox": "Unlock Attribute Points",
                 "cheat_mode_tooltip": "Check this box to allow unrestricted attribute incrementing."
             }

@@ -16,7 +16,7 @@
             didInsertElement: function() {
                var self = this;
                self._super();
-               self._injectEditTraitsHtml();
+               self._injectAddTraitsHtml();
                self._injectCheatModeCheckbox();
             },
             willDestroyElement: function() {
@@ -48,24 +48,24 @@
                self.cheatMode = event.target.checked;
                self.$().trigger('cheatModeUpdate');
             },
-            _injectEditTraitsHtml: function() {
+            _injectAddTraitsHtml: function() {
                var self = this;
                var rootElement = self.$();
 
-               var createEditTraitsButton = () => {
-                  var i18n_text = i18n.t('stonehearth_beam:ui.shell.beam_roster.edit_traits');
-                  var button = $(`<a href="#" id="edit_traits"><button>${i18n_text}</button></a>`);
-                  button.on('click', () => self._showEditTraitsView());
+               var createAddTraitsButton = () => {
+                  var i18n_text = i18n.t('stonehearth_beam:ui.shell.beam_roster.add_traits');
+                  var button = $(`<a href="#" id="add_traits"><button>${i18n_text}</button></a>`);
+                  button.on('click', () => self._showAddTraitsView());
                   return button;
                };
-               rootElement.find('#traitDescriptions').append(createEditTraitsButton())
+               rootElement.find('.gui').append(createAddTraitsButton())
             },
-            _showEditTraitsView: function() {
+            _showAddTraitsView: function() {
                var self = this;
-               if (self._editTraitsView) {
-                  self._editTraitsView.destroy();
+               if (self._addTraitsView) {
+                  self._addTraitsView.destroy();
                }
-               self._editTraitsView = App.shellView.addView(App.BeamTraitCustomizationView, { _citizen: self.selected, _citizenObjectId: self.selected.__self });
+               self._addTraitsView = App.shellView.addView(App.BeamTraitCustomizationView, { _citizen: self.selected, _citizenObjectId: self.selected.__self });
             }
       });
 
@@ -232,28 +232,32 @@ App.BeamTraitCustomizationView = App.View.extend({
    classNames: [],
    _citizen: null,
    _citizenObjectId: null,
-   components: {
-      'stonehearth:traits' : {
-         'traits': {
-            '*' : {}
-         }
-      },
-   },
 
    init: function() {
-      this._super();
       var self = this;
+      self._super();
    },
 
    didInsertElement: function () {
       var self = this;
+      self._super();
 
       radiant.call_obj('stonehearth_beam.stats_customization', 'get_all_traits_command', self._citizenObjectId)
             .done(function(response) {
-                  self.set('traits', response.all_traits);
+               traits = response.all_traits;
+               traits.sort((a, b) => {
+                  var nameA = i18n.t(a.display_name, a);
+                  var nameB = i18n.t(b.display_name, b);
+                  if (nameA < nameB)
+                     return -1;
+                  if (nameA > nameB)
+                     return 1;
+                  return 0;
+               });
+               self.set('traits', traits);
             })
             .fail(function(response) {
-                  console.log('get_all_traits failed.', response);
+               console.log('get_all_traits failed.', response);
             });
    },
 
@@ -262,10 +266,17 @@ App.BeamTraitCustomizationView = App.View.extend({
    },
 
    actions: {
-      save: function () {
-         this.destroy();
+      add_trait: function(trait_uri) {
+         var self = this;
+         radiant.call_obj('stonehearth_beam.stats_customization', 'add_trait_command', self._citizenObjectId, trait_uri)
+            .done(function(response) {
+               self.destroy();
+            })
+            .fail(function(response) {
+               console.log('get_all_traits failed.', response);
+            });
       },
-      cancel: function () {
+      close: function () {
          this.destroy();
       }
    },
