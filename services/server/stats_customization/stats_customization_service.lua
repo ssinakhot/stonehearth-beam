@@ -56,7 +56,7 @@ function StatsCustomizationService:get_all_traits_command(session, response, ent
         trait['uri'] = trait_uri
         table.insert(all_traits, trait)
    end
-   response:resolve({ all_traits = all_traits, test = pop._traits })
+   response:resolve({ all_traits = all_traits })
 end
 
 function StatsCustomizationService:add_trait_command(session, response, entity, trait_uri)

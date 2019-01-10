@@ -251,7 +251,6 @@ App.BeamTraitCustomizationView = App.View.extend({
       radiant.call_obj('stonehearth_beam.stats_customization', 'get_all_traits_command', self._citizenObjectId)
             .done(function(response) {
                   self.set('traits', response.all_traits);
-                  console.log(response.test);
             })
             .fail(function(response) {
                   console.log('get_all_traits failed.', response);
