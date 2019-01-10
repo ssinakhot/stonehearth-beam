@@ -2,7 +2,7 @@
     "ui": {
         "shell": {
             "beam_roster": {
-                "edit_traits": "Edit Traits",
+                "edit_traits": "Edit Traits (Preview Version",
                 "edit_traits_title": "Edit Traits",
                 "cancel_traits": "Cancel",
                 "save_traits": "Save & Close"

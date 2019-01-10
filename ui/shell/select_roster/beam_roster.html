@@ -6,16 +6,14 @@
             <div class="closeButton"></div>
          </div>
 
-         <div class="downSection">
-            <div id="traits">
-                {{#each view.traits itemView="beamTraitItem"}}
-                    <div class="traitDescription" {{bind-attr uri=this.uri}}>
-                        <img {{bind-attr src=this.icon}} />
-                        <div class="displayName" />
-                        <div class="description" />
-                    </div>
-                {{/each}}
-            </div>
+         <div id="traits">
+               {{#each view.traits itemView="beamTraitItem"}}
+                  <div class="traitDescription" {{bind-attr uri=this.uri}}>
+                     <img {{bind-attr src=this.icon}} />
+                     <div class="displayName" />
+                     <div class="description" />
+                  </div>
+               {{/each}}
          </div>
 
          <div id="buttons">
