@@ -118,13 +118,14 @@
                var self = this;
                self.cheatMode = event.target.checked;
                self.$().trigger('cheatModeUpdate');
+               self._updateTraitButtons();
             },
             _injectAddTraitsHtml: function() {
                var self = this;
                var rootElement = self.$();
 
                var currentTraitUris = Object.keys(self.selected['stonehearth:traits'].traits);
-               if (currentTraitUris.length >= self.traitsLimit) {
+               if (!self.cheatMode && currentTraitUris.length >= self.traitsLimit) {
                   if (self.addTraitsButton) {
                      self.addTraitsButton.remove();
                      self.addTraitsButton = null;
