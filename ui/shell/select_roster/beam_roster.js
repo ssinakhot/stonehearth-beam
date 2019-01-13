@@ -41,12 +41,30 @@
 
       App.StonehearthSelectRosterView.reopen({
             cheatMode: false,
+            // defaults that will be override on load
+            attributeDistribution: {
+               point_limits: {
+                  body: {
+                     max: 6,
+                     min: 1
+                  },
+                  mind: {
+                     max: 6,
+                     min: 1
+                  },
+                  spirit: {
+                     max: 6,
+                     min: 1
+                  }
+               }
+            },
+            traitsLimit: 2,
             // OVERRIDES
             didInsertElement: function() {
                var self = this;
                self._super();
-               self._injectAddTraitsHtml();
                self._injectCheatModeCheckbox();
+               self._loadAttributeDistribution();
             },
             willDestroyElement: function() {
                var self = this;
@@ -57,10 +75,27 @@
                var self = this;
                self._super(citizen, selectedView, selectedViewIndex);
                if (citizen) {
-                  setTimeout(() => self._injectRemoveTraitHtml(), 100);
+                  self._updateTraitButtons();
                }
             },
             // FUNCTIONS
+            _updateTraitButtons: function() {
+               var self = this;
+               setTimeout(() => {
+                  self._injectRemoveTraitHtml(); 
+                  self._injectAddTraitsHtml();
+               }, 100);
+            },
+            _loadAttributeDistribution: function() {
+               var self = this;
+               radiant.call_obj('stonehearth_beam.stats_customization', 'get_max_stats_command')
+                  .done(function(response) {
+                     self.attributeDistribution = response.attribute_distribution;
+                  })
+                  .fail(function(response) {
+                     console.log('get_all_traits failed.', response);
+                  });
+            },
             _injectCheatModeCheckbox: function() {
                var self = this;
                var rootElement = self.$();
@@ -88,13 +123,26 @@
                var self = this;
                var rootElement = self.$();
 
+               var currentTraitUris = Object.keys(self.selected['stonehearth:traits'].traits);
+               if (currentTraitUris.length >= self.traitsLimit) {
+                  if (self.addTraitsButton) {
+                     self.addTraitsButton.remove();
+                     self.addTraitsButton = null;
+                  }
+                  return;
+               }
+                  
+               if (self.addTraitsButton)
+                  return;
+
                var createAddTraitsButton = () => {
                   var i18n_text = i18n.t('stonehearth_beam:ui.shell.beam_roster.add_traits');
                   var button = $(`<a href="#" id="add_traits"><button>${i18n_text}</button></a>`);
                   button.on('click', () => self._showAddTraitsView());
                   return button;
                };
-               rootElement.find('.gui').append(createAddTraitsButton());
+               self.addTraitsButton = createAddTraitsButton();
+               rootElement.find('.gui').append(self.addTraitsButton);
             },
             _showAddTraitsView: function() {
                var self = this;
@@ -125,18 +173,15 @@
                var self = this;
                radiant.call_obj('stonehearth_beam.stats_customization', 'remove_trait_command', self.selected.__self, trait_uri)
                   .done(function(response) {
-                     setTimeout(() => self._injectRemoveTraitHtml(), 100);
+                     self._updateTraitButtons();
                   })
                   .fail(function(response) {
-                     console.log('get_all_traits failed.', response);
+                     console.log('remove_trait failed.', response);
                   });
             }
       });
 
       App.StonehearthCitizenRosterEntryView.reopen({
-         maxIndividualStatValue: 6,
-         currentStatAmount: 36,
-         maxStatAmount: 36,
          // OVERRIDES
          didInsertElement: function() {
             var self = this;
@@ -163,8 +208,8 @@
                self._stat['mind'] = citizenData['stonehearth:attributes'].attributes['mind'].value;
                self._stat['body'] = citizenData['stonehearth:attributes'].attributes['body'].value;
                self._stat['spirit'] = citizenData['stonehearth:attributes'].attributes['spirit'].value;
-               self.maxStatAmount = self._stat['mind'] + self._stat['body'] + self._stat['spirit'];
-               self.currentStatAmount = self.maxStatAmount;
+               self._maxStatAmount = self._stat['mind'] + self._stat['body'] + self._stat['spirit'];
+               self._currentStatAmount = self._maxStatAmount;
                self._updateArrowStatus();
                self._updateStatsTotalIndicator();
             }
@@ -201,7 +246,7 @@
             var rootElement = self.$();
             var statsTotalSection = rootElement.find('.statsTotal');
 
-            var unspentPoints = self.maxStatAmount - self.currentStatAmount;
+            var unspentPoints = self._maxStatAmount - self._currentStatAmount;
             var unspentPointsEle = statsTotalSection.find('#unspentPoints');
             unspentPointsEle.html(unspentPoints)
 
@@ -219,19 +264,19 @@
                var attributes = ['mind', 'body', 'spirit'];
                for (var index = 0; index < attributes.length; index++) 
                {
-                  var attrName = attributes[index];
-                  var value = self._stat[attrName];
-                  if (self._canDecrement(value)) 
-                     self._showArrow('decrement', attrName);
+                  var statType = attributes[index];
+                  var value = self._stat[statType];
+                  if (self._canDecrement(statType, value)) 
+                     self._showArrow('decrement', statType);
                   else
-                     self._hideArrow('decrement', attrName);
-                  if (self.rosterView.cheatMode || self._canIncrement(value)) 
-                     self._showArrow('increment', attrName);
+                     self._hideArrow('decrement', statType);
+                  if (self.rosterView.cheatMode || self._canIncrement(statType, value)) 
+                     self._showArrow('increment', statType);
                   else
-                     self._hideArrow('increment', attrName);
+                     self._hideArrow('increment', statType);
                }
             }
-            if (!self.rosterView.cheatMode && self.maxStatAmount == self.currentStatAmount) {
+            if (!self.rosterView.cheatMode && self._maxStatAmount == self._currentStatAmount) {
                self._hideArrow('increment', 'mind');
                self._hideArrow('increment', 'body');
                self._hideArrow('increment', 'spirit');
@@ -245,15 +290,17 @@
             var self = this;
             self.$().find(`#${statType} .${operator}`).removeClass('hidden');
          },
-         _canIncrement: function(oldValue) {
+         _canIncrement: function(statType, oldValue) {
             var self = this;
-            if (!self.rosterView.cheatMode && oldValue >= self.maxIndividualStatValue)
+            var maxValue = self.rosterView.attributeDistribution.point_limits[statType].max
+            if (!self.rosterView.cheatMode && oldValue >= maxValue)
                return false;
             return true;
          },
-         _canDecrement: function(oldValue) {
+         _canDecrement: function(statType, oldValue) {
             var self = this;
-            if (oldValue == 1)
+            var minValue = self.rosterView.attributeDistribution.point_limits[statType].min;
+            if (oldValue == minValue)
                return false;
             return true;
          },
@@ -261,14 +308,14 @@
             var self = this;
             var changed = false;
             var oldValue = self._stat[statType];
-            if (operator == 'increment' && self._canIncrement(oldValue)) {
+            if (operator == 'increment' && self._canIncrement(statType, oldValue)) {
                self._stat[statType]++;
-               self.currentStatAmount++;
+               self._currentStatAmount++;
                changed = true;
             }
-            else if (operator == 'decrement' && self._canDecrement(oldValue)) {
+            else if (operator == 'decrement' && self._canDecrement(statType, oldValue)) {
                self._stat[statType]--;
-               self.currentStatAmount--;
+               self._currentStatAmount--;
                changed = true;
             }
             if (!changed)
@@ -329,6 +376,7 @@
       inject();
    });
 })();
+
 App.BeamTraitCustomizationView = App.View.extend({
    templateName: 'beamTraitCustomization',
    classNames: [],
@@ -376,7 +424,7 @@ App.BeamTraitCustomizationView = App.View.extend({
          var self = this;
          radiant.call_obj('stonehearth_beam.stats_customization', 'add_trait_command', self._citizenObjectId, trait_uri)
             .done(function(response) {
-               setTimeout(() => self.rosterView._injectRemoveTraitHtml(), 100);
+               self.rosterView._updateTraitButtons();
                self.destroy();
             })
             .fail(function(response) {

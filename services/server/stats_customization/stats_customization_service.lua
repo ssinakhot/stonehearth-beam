@@ -9,6 +9,11 @@ local StatsCustomizationService = class()
 function StatsCustomizationService:initialize()
 end
 
+function StatsCustomizationService:get_max_stats_command(session, response)
+   local pop = stonehearth.population:get_population(session.player_id)
+   response:resolve({ attribute_distribution = pop:get_role_data().attribute_distribution })
+end
+
 -- Set the entity's stat using the given stat type 
 function StatsCustomizationService:change_stat_by_type_command(session, response, entity, statType, value)
    validator.expect_argument_types({'Entity', 'string', 'number'}, entity, statType, value)
@@ -30,7 +35,7 @@ function StatsCustomizationService:get_all_traits_command(session, response, ent
             trait['i18n_data'] = {}
             trait['i18n_data']['entity_custom_name'] = radiant.entities.get_custom_name(entity) 
             trait['i18n_data']['entity_display_name'] = radiant.entities.get_display_name(entity)
-            if group_name == 'passion_jobs' then
+            if group_name == 'passion_jobs' and trait.data.job_uri then
                 local job = radiant.resources.load_json(trait.data.job_uri, true, true)
                 trait['i18n_data']['passion_job'] = job.display_name
             end

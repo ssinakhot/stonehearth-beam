@@ -16,6 +16,7 @@
     },
     "object_commands": {
       "stats_customization": [
+         "get_max_stats_command",    
          "change_stat_by_type_command",
          "get_all_traits_command",
          "add_trait_command",
