@@ -1,5 +1,34 @@
 
 (function() {
+
+   // Credit David Walsh (https://davidwalsh.name/javascript-debounce-function)
+
+   // Returns a function, that, as long as it continues to be invoked, will not
+   // be triggered. The function will be called after it stops being called for
+   // N milliseconds. If `immediate` is passed, trigger the function on the
+   // leading edge, instead of the trailing.
+   function debounce(func, wait, immediate) {
+      var timeout;
+
+      return function executedFunction() {
+         var context = this;
+         var args = arguments;
+            
+         var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+         };
+
+         var callNow = immediate && !timeout;
+         
+         clearTimeout(timeout);
+
+         timeout = setTimeout(later, wait);
+         
+         if (callNow) func.apply(context, args);
+      };
+   };
+
    var injected = false;
    var inject = () => {
       if (injected) {
@@ -130,10 +159,11 @@
             var self = this;
             var citizenData = self.get('model');
             if (self.$() && citizenData) {
-               var mindValue = citizenData['stonehearth:attributes'].attributes['mind'].value;
-               var bodyValue = citizenData['stonehearth:attributes'].attributes['body'].value;
-               var spiritValue = citizenData['stonehearth:attributes'].attributes['spirit'].value;
-               self.maxStatAmount = mindValue + bodyValue + spiritValue;
+               self._stat = {};
+               self._stat['mind'] = citizenData['stonehearth:attributes'].attributes['mind'].value;
+               self._stat['body'] = citizenData['stonehearth:attributes'].attributes['body'].value;
+               self._stat['spirit'] = citizenData['stonehearth:attributes'].attributes['spirit'].value;
+               self.maxStatAmount = self._stat['mind'] + self._stat['body'] + self._stat['spirit'];
                self.currentStatAmount = self.maxStatAmount;
                self._updateArrowStatus();
                self._updateStatsTotalIndicator();
@@ -190,7 +220,7 @@
                for (var index = 0; index < attributes.length; index++) 
                {
                   var attrName = attributes[index];
-                  var value = citizenData['stonehearth:attributes'].attributes[attrName].value;
+                  var value = self._stat[attrName];
                   if (self._canDecrement(value)) 
                      self._showArrow('decrement', attrName);
                   else
@@ -228,30 +258,65 @@
             return true;
          },
          _changeCitizenStat: function(operator, statType) {
-               var self = this;
-               var oldValue = self.model['stonehearth:attributes'].attributes[statType].value;
-               var newValue = oldValue;
-               if (operator == 'increment' && self._canIncrement(oldValue)) {
-                  newValue++;
-                  self.currentStatAmount++;
-               }
-               else if (operator == 'decrement' && self._canDecrement(oldValue)) {
-                  newValue--;
-                  self.currentStatAmount--;
-               }
-               if (newValue == oldValue)
-                  return;
-
-               radiant.call_obj('stonehearth_beam.stats_customization', 'change_stat_by_type_command', self._citizenObjectId, statType, newValue)
-                  .done(function(response) {
-                     self._updateArrowStatus();
-                     self._updateStatsTotalIndicator();
-                  })
-                  .fail(function(response) {
-                     console.log('change_stat_by_type failed.', response);
-                  });
+            var self = this;
+            var changed = false;
+            var oldValue = self._stat[statType];
+            if (operator == 'increment' && self._canIncrement(oldValue)) {
+               self._stat[statType]++;
+               self.currentStatAmount++;
+               changed = true;
             }
-      });
+            else if (operator == 'decrement' && self._canDecrement(oldValue)) {
+               self._stat[statType]--;
+               self.currentStatAmount--;
+               changed = true;
+            }
+            if (!changed)
+               return;
+            // trick the client into thinking it's updated
+            Ember.set(self.get('model')['stonehearth:attributes'].attributes[statType], 'user_visible_value', self._stat[statType]);
+            self._updateArrowStatus();
+            self._updateStatsTotalIndicator();
+            switch (statType) {
+               case 'mind':
+                  self._debounceUpdateMind(self._stat[statType])
+                  break;
+               case 'body':
+                  self._debounceUpdateBody(self._stat[statType]);
+                  break;
+               case 'spirit':
+                  self._debounceUpdateSpirit(self._stat[statType]);
+                  break;
+            }
+         },
+         _debounceUpdateMind: debounce(function(newValue) {
+            var self = this;
+            radiant.call_obj('stonehearth_beam.stats_customization', 'change_stat_by_type_command', self._citizenObjectId, 'mind', newValue)
+               .done(function(response) {
+               })
+               .fail(function(response) {
+                  console.log('change_stat_by_type failed.', response);
+               });
+         }),
+         _debounceUpdateBody: debounce(function(newValue) {
+            var self = this;
+            radiant.call_obj('stonehearth_beam.stats_customization', 'change_stat_by_type_command', self._citizenObjectId, 'body', newValue)
+               .done(function(response) {
+               })
+               .fail(function(response) {
+                  console.log('change_stat_by_type failed.', response);
+               });
+         }),
+         _debounceUpdateSpirit: debounce(function(newValue) {
+            var self = this;
+            radiant.call_obj('stonehearth_beam.stats_customization', 'change_stat_by_type_command', self._citizenObjectId, 'spirit', newValue)
+               .done(function(response) {
+               })
+               .fail(function(response) {
+                  console.log('change_stat_by_type failed.', response);
+               });
+         }),
+      })
    }
 
    // run this on ready for hot_reload on the same roster screen
